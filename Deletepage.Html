@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <title>Training</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://otsioperations.sharepoint.com/sites/RajeshPOC/Departments/DepartmentHr/CurdOperation/global.services.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  <!-- for date picker -->
+  $( function() {
+    $( "#datepicker" ).datepicker({dateFormat: 'yy-mm-dd' });
+  } );
+  </script>
+
+    <script type="text/javascript">
+     
+	 //getemployee
+	  $(document).ready(function () {
+	   $('#btndelete').attr('title','click here to delete Data');
+	   $('#btncancel').attr('title','click here to cancle operation');
+            debugger
+			 var id = getQueryStringParameter("RequestID");
+			 
+			if(id !="")
+			{
+			debugger
+			GetEmployeebyid();
+			}
+			else if(id =="")
+			{
+			debugger
+			window.location.replace("https://otsioperations.sharepoint.com/sites/RajeshPOC/Departments/DepartmentHr/SitePages/EmployeeInformation.aspx");
+			}
+			
+        });
+
+		debugger
+		 function GetEmployeebyid() {
+            var id = getQueryStringParameter("RequestID");
+            debugger;
+         //GlobalServices
+            var frdAction = GlobalServices.sharepoint.getItem("ListEmployee",id);
+			 debugger;
+        		  frdAction.done(function(r) { 
+				  
+				  $('#txtName').val(r.EmployeeName) 
+                    $('#txtEmail').val(r.Email) 
+					
+					<!-- //get data from iso type to requied type -->
+					 var date = new Date(r.DateOfJoining);
+
+                   year = date.getFullYear(); 
+                      month = date.getMonth()+1; 
+                   dt = date.getDate();
+                 if (dt < 10) { 
+                    dt = '0' + dt; 
+                    } 
+                    if (month < 10) { 
+                  month = '0' + month; 
+                         } 
+                     $('#datepicker').val(year+'-' + month + '-'+dt) 					 
+		            $('#ddlDesignation').val(r.Title) 
+			         $('#txtEmployeeId').val(r.EmployeeId)
+				    alert("Data retrieved Successfully"); })
+        		  .fail(function(er) { alert("Failed to fetch Data"); })
+            
+        }
+
+
+
+		
+           //for clear
+			function clear(){ 
+              debugger;                    
+                  $('#txtName').val("") 
+                 $('#txtEmail').val("") 
+               $('#datepicker').val("") 
+		 $('#ddlDesignation').val("") 
+			 $('#txtEmployeeId').val("")
+       window.location.href =  window.location.href.split("?")[0]; 
+          } 
+
+
+		//for delete
+		function Delete() {
+            try {
+                debugger;
+                var id = getQueryStringParameter("RequestID");
+              //GlobalServices
+             GlobalServices.sharepoint.deleteItem("ListEmployee", id)
+            
+             alert("Item Deleted Successfully");
+            clear();
+            }
+		  
+          catch (err) 
+            {
+                console.log(err.message);
+            }
+        }
+		
+		
+		// Function to retrieve a query string value.
+        function getQueryStringParameter(paramToRetrieve) {
+		debugger
+            var returnValue = "";
+            if (document.URL.split("?").length > 1) {
+                var params = document.URL.split("?")[1].split("&");
+                var strParams = "";
+
+                for (var i = 0; i < params.length; i = i + 1) {
+                    var singleParam = params[i].split("=");
+                    if (singleParam[0] == paramToRetrieve)
+                        returnValue = singleParam[1];
+                }
+            }
+            return returnValue;
+        }
+
+// to clear with button
+           function cancle()
+            {
+               clear();
+                 }
+    </script>
+	
+</head>
+<body>
+<!-- //delete form -->
+<div class="container">	
+        <h4>Add Employee Information</h4>
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="Emp">Name: </label>
+                <input type="text" id="txtName" class="form-control" disabled="disabled"/>
+            </div>
+            <div class="col-sm-6">
+                <label for="Emp">Email: </label>
+                <input type="text" id="txtEmail" class="form-control" disabled="disabled"/>
+            </div>
+           
+
+			<div class="col-sm-6">
+                <label for="Emp">DateOfJoining: </label>
+                <input type="text" id="datepicker" class="form-control" disabled="disabled"/>
+            </div>
+			
+		    <div class="col-sm-6">
+                <label for="Emp">EmployeeId: </label>
+                <input type="number" id="txtEmployeeId" class="form-control" disabled="disabled" />
+            </div>
+			<div class="col-sm-6">
+                <label for="Emp">Designation: </label>
+                
+				  <select id="ddlDesignation" class="form-control" disabled="disabled">
+				   <option value="">Select</option>
+                    <option value="HR">HR</option>
+					 <option value="Manager">Manager</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Pre Sales">Pre Sales</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Production">Production</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="R&D">R&D</option>
+                </select>
+            </div>
+        
+        </div>
+        <div class="text-right">
+            <button type="button" id="btndelete"   onclick="Delete()" class="btn btn-danger">DELETE</button>
+          <button type="button" id="btncancel"   onclick="cancle()" class="btn btn-warning">CANCEL</button>
+        </div>
+    </div>
+	
+</body>
+</html>
+  

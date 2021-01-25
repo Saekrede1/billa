@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+    <title>Training</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://otsioperations.sharepoint.com/sites/RajeshPOC/Departments/DepartmentHr/CurdOperation/global.services.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+
+ <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ 
+  
+
+
+
+    <script type="text/javascript">
+     
+	 <!-- for date picker -->
+  $( function() {
+    $( "#datepicker" ).datepicker({dateFormat: 'yy-mm-dd' });
+  } );
+	 
+	 //getemployees
+	  $(document).ready(function () {
+	      $('#btnSubmit').attr('title','click here to update');
+	      $('#btnclear').attr('title','click here to clear fields');
+		  $('#btncancel').attr('title','click here to cancle operation');
+            debugger
+			 var id = getQueryStringParameter("RequestID");
+			 
+			if(id !="")
+			{
+			debugger
+			GetEmployeebyid();
+			}
+			else if(id =="")
+			{
+			debugger
+			window.location.replace("https://otsioperations.sharepoint.com/sites/RajeshPOC/Departments/DepartmentHr/SitePages/EmployeeInformation.aspx");
+			}
+			
+        });
+		//method used to bind user data to form fields
+		 function GetEmployeebyid() {
+            var id = getQueryStringParameter("RequestID");
+            debugger;
+			//GlobalServices
+			 var frdAction = GlobalServices.sharepoint.getItem("ListEmployee", id);
+			 debugger;
+        		  frdAction.done(function(r) { 
+				  
+				  $('#txtName').val(r.EmployeeName) 
+                    $('#txtEmail').val(r.Email) 
+					
+					
+					 var date = new Date(r.DateOfJoining);
+
+                   year = date.getFullYear(); 
+                      month = date.getMonth()+1; 
+                   dt = date.getDate();
+                 if (dt < 10) { 
+                    dt = '0' + dt; 
+                    } 
+                    if (month < 10) { 
+                  month = '0' + month; 
+                         } 
+                     $('#datepicker').val(year+'-' + month + '-'+dt) 					 
+		            $('#ddlDesignation').val(r.Title) 
+			         $('#txtEmployeeId').val(r.EmployeeId)
+				  alert("Data retrieved Successfully"); })
+        		  .fail(function(er) { alert("Failed to fetch Data"); })
+
+        }
+		//for validations
+    function ValidateForm()
+    {
+  
+  if(document.getElementById("txtName").value == ""||document.getElementById("txtEmail").value == ""||
+  document.getElementById("datepicker").value == "" || document.getElementById("txtEmployeeId").value == ""||
+ document.getElementById("ddlDesignation").value == "" ){
+	//name
+    if (document.getElementById("txtName").value == "")
+    {
+        document.getElementById("lblName").innerText = "Name is required";
+       
+    }
+    else
+    {
+        document.getElementById("lblName").innerText = "";
+    }
+	//email
+    if (document.getElementById("txtEmail").value == "")
+    {
+        document.getElementById("lblEmail").innerText = "Email is required";
+       
+    }
+    else
+    {
+        document.getElementById("lblEmail").innerText = "";
+    }
+	
+	
+   //dateofjoin
+    if (document.getElementById("datepicker").value == "")
+    {
+        document.getElementById("lblDateOfJoining").innerText = "DateOfJoining is required";
+        
+    }
+    else
+    {
+        document.getElementById("lblDateOfJoining").innerText = "";
+    }
+	
+	//employeeid
+	
+	 if (document.getElementById("txtEmployeeId").value == "")
+    {
+        document.getElementById("lblEmployeeId").innerText = "EmployeeId is required";
+       
+    }
+    else
+    {
+        document.getElementById("lblEmployeeId").innerText = "";
+    }
+	
+	//designation
+	
+	 if (document.getElementById("ddlDesignation").value == "")
+    {
+        document.getElementById("lblDesignation").innerText = "Designation is required";
+       
+    }
+    else
+    {
+        document.getElementById("lblDesignation").innerText = "";
+		 
+    }
+    }
+	else{
+	 document.getElementById("lblDesignation").innerText = "";
+		document.getElementById("lblName").innerText = ""; 
+		   document.getElementById("lblEmail").innerText = ""; 
+		 document.getElementById("lblDateOfJoining").innerText = ""; 
+		   document.getElementById("lblEmployeeId").innerText = ""; 
+		   UpdateData();
+	}
+}
+    
+
+
+		
+		//update employe data
+		function UpdateData() {
+            try {
+                debugger;
+                var id = getQueryStringParameter("RequestID");
+             
+                var Item = {
+				 'Title': $('#ddlDesignation').val(),
+                'EmployeeName': $('#txtName').val(),
+                'Email': $('#txtEmail').val(),
+                'DateOfJoining': $('#datepicker').val(),
+                'EmployeeId': $('#txtEmployeeId').val()
+				
+                }
+
+                Item.__metadata = {
+                    'type': 'SP.Data.ListEmployeeListItem'
+                };
+            //GlobalServices
+           var frdAction = GlobalServices.sharepoint.updateItem("ListEmployee", Item, id);
+		   debugger;
+        	  frdAction.done(function(r) { alert("Item updated Successfully");  clear();})
+        		  .fail(function(er) { alert("Failed to updated item"); })
+               
+            }
+            catch (err) {
+                console.log(err.message);
+            }
+        }
+            
+           //for clear from fiels
+			function clear(){ 
+              debugger;                    
+                  $('#txtName').val("") 
+                 $('#txtEmail').val("") 
+               $('#datepicker').val("") 
+		      $('#ddlDesignation').val("") 
+			 $('#txtEmployeeId').val("")
+			 //split the url after ?
+       window.location.href =  window.location.href.split("?")[0]; 
+          } 
+		
+		
+		
+		// Function to retrieve a query string value.
+        function getQueryStringParameter(paramToRetrieve) {
+		debugger
+            var returnValue = "";
+            if (document.URL.split("?").length > 1) {
+                var params = document.URL.split("?")[1].split("&");
+                var strParams = "";
+
+                for (var i = 0; i < params.length; i = i + 1) {
+                    var singleParam = params[i].split("=");
+                    if (singleParam[0] == paramToRetrieve)
+                        returnValue = singleParam[1];
+                }
+            }
+            return returnValue;
+        }
+
+// to clear and cancle when click on cancle  button
+           function cancle()
+            {
+               clear();
+            }
+				 
+				 
+//Function to allow only numbers to textbox
+function validate(key)
+{
+//getting key code of pressed key
+var keycode = (key.which) ? key.which : key.keyCode;
+var empid = document.getElementById('txtEmployeeId');
+//comparing pressed keycodes
+if (!(keycode==8 || keycode==46)&&(keycode < 48 || keycode > 57))
+{
+return false;
+}
+else
+{
+//Condition to check textbox contains ten numbers or not
+if (empid.value.length <4)
+{
+return true;
+}
+else
+{
+return false;
+}
+}
+}				 
+
+    </script>
+	
+</head>
+<body>
+<!-- update form -->
+<div class="container">	
+        <h4>Add Employee Information</h4>
+              <div class="row">
+            <div class="col-sm-6">
+                <label  for="Emp">Name: </label>
+                <input type="text" id="txtName" class="form-control" />
+				<label  id="lblName" style='color:red' > </label>
+            </div>
+            <div class="col-sm-6">
+                <label for="Emp" >Email: </label>
+                <input type="text" id="txtEmail" class="form-control" />
+		      <label id="lblEmail" style='color:red'> </label>
+            </div>
+           
+
+			<div class="col-sm-6">
+                <label for="Emp">DateOfJoining: </label>
+                <input type="text" id="datepicker" class="form-control" />
+				  <label id="lblDateOfJoining" style='color:red'> </label>
+            </div>
+			
+			
+		    <div class="col-sm-6">
+                <label  for="Emp">EmployeeId: </label>
+                <input type="number" id="txtEmployeeId" class="form-control" onkeypress="return validate(event)"/>
+				 <label id="lblEmployeeId" style='color:red'> </label>
+            </div>
+			<div class="col-sm-6">
+                <label  for="Emp">Designation: </label>
+                
+				  <select id="ddlDesignation" class="form-control">
+				   <option value="">Select</option>
+                    <option value="HR">HR</option>
+					 <option value="Manager">Manager</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Pre Sales">Pre Sales</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Production">Production</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="R&D">R&D</option>
+                </select>
+				<label id="lblDesignation" style='color:red'></label>
+            </div>
+        
+        </div>
+        <div class="text-right">
+            <button type="button" id="btnSubmit" onclick="ValidateForm()" class="btn btn-primary">UPDATE</button>
+            <button type="reset" id="btnclear"   class="btn btn-danger">CLEAR</button>
+          <button type="button" id="btncancel"   onclick="cancle()" class="btn btn-warning">CANCEL</button>
+        </div>
+    </div>
+	
+</body>
+</html>
+  
